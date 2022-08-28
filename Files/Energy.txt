@@ -1,0 +1,40 @@
+import psutil,datetime, schedule,openpyxl
+pid=int(input("Enter process id:"))
+def warning():
+    cpuusage=psutil.cpu_percent(interval=1)
+    if cpuusage>50:
+        print("cpu usage is greater than above 50 percentage",cpuusage)
+    memusage=psutil.virtual_memory().percent
+    if memusage>50:
+        print("mem usage is greater than above 50 percentage",memusage)
+def monitor():
+    time=datetime.datetime.now().strftime("%Y%m%d - %H:%M:%S")
+    p=psutil.Process(pid)
+    cpu=p.cpu_percent(interval=1)/psutil.cpu_count()
+    memory_mb=p.memory_full_info().rss/(1024*1024)
+    memory=p.memory_percent()
+    path=r".\Monitor.xlsx"
+    file=openpyxl.load_workbook(path)
+    sheet=file.active
+    sheet.cell(column=1,row=sheet.max_row+1,value=time)
+    sheet.cell(column=2,row=sheet.max_row,value=pid)
+    sheet.cell(column=3,row=sheet.max_row,value=cpu)
+    sheet.cell(column=4,row=sheet.max_row,value=memory_mb)
+    sheet.cell(column=5,row=sheet.max_row,value=memory)
+    file.save(path)
+    
+    
+schedule.every(1).second.do(warning)
+schedule.every(5).seconds.do(monitor)
+
+while True:
+    schedule.run_pending()
+    #time.sleep(1)
+  
+
+
+dataset-1-Arrthymia
+dataset-2-Cancer
+dataset-3-Diabetes
+dataset-4-Mi-band-Heart Rate  
+        
